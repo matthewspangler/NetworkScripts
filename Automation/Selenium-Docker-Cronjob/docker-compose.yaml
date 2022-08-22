@@ -1,0 +1,15 @@
+version: '3'
+services:
+
+  selenium_jobs:
+     build:
+        context: ./selenium_jobs
+     image: mmg/selenium_jobs
+     environment:
+       - foreman_email_1=${foreman_email_1}
+       - foreman_password_1=${foreman_password_1}
+     volumes:
+        - ./selenium_jobs:/home/selenium_jobs
+     working_dir: /home/selenium_jobs/scripts
+     entrypoint: ./entrypoint.sh
+     command: cron -f

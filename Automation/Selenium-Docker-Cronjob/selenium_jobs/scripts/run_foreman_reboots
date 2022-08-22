@@ -1,0 +1,57 @@
+#!/usr/bin/python3
+import time
+import atexit
+import psutil
+import os
+from selenium_jobs.scripts.bots.foreman_bot import ForemanBot
+
+
+# Kill chromedriver on script exit--to prevent filling up RAM over time.
+def exit_handler():
+    PROCNAME = "chromium"
+
+    for proc in psutil.process_iter():
+        # check whether the process name matches
+        if proc.name() == PROCNAME:
+            proc.kill()
+
+
+def main():
+    atexit.register(exit_handler)
+
+    bot = ForemanBot()
+
+    foreman_user = os.environ['foreman_email_1']
+    foreman_pass = os.environ['foreman_password_1']
+
+    bot.login(foreman_user, foreman_pass)
+    bot.wait_for_dashboard_load()
+    bot.select_client("Miningstore")
+    bot.wait_for_dashboard_load()
+
+    # Zero hash miners
+    bot.open_sidebar_page("Issues")
+    bot.view_issues("Zero hash rate")
+    bot.wait_for_miners_page_load()
+    bot.bulk_edit("Reboot (Remote)")
+    bot.clear_any_filters()
+
+    # No shares submitted
+    bot.open_sidebar_page("Issues")
+    bot.view_issues("No shares being submitted")
+    bot.wait_for_miners_page_load()
+    bot.bulk_edit("Reboot (Remote)")
+    bot.clear_any_filters()
+
+    # Miner not updating
+    bot.open_sidebar_page("Issues")
+    bot.view_issues("Miner not updating")
+    bot.wait_for_miners_page_load()
+    bot.bulk_edit("Reboot (Remote)")
+    bot.clear_any_filters()
+
+    bot.driver.close()
+
+
+if __name__ == '__main__':
+    main()

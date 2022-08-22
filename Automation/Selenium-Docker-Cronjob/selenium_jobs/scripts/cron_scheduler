@@ -1,0 +1,1 @@
+0 22 * * * root /bin/bash /home/selenium_jobs/scripts/run_foreman_job.sh >> /home/selenium_jobs/crontab.log 2>&1
